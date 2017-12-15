@@ -18,7 +18,7 @@ class Aerospike(object):
     self.name = name
     self.client = client
   def put(self, key:str, value:str):
-    key = ('rar-aerospike', self.name, key)
+    key = ('hdd', self.name, key)
     self.client.put(key, { 'data': value })
   def get(self, key:str):
     key = ('rar-aerospike', self.name, key)
