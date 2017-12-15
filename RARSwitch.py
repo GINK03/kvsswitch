@@ -21,9 +21,9 @@ class Aerospike(object):
     key = ('hdd', self.name, key)
     self.client.put(key, { 'data': value })
   def get(self, key:str):
-    key = ('rar-aerospike', self.name, key)
-    (key, metadata, record) = client.get(key)
-    return record
+    key = ('hdd', self.name, key)
+    (key, metadata, record) = self.client.get(key)
+    return record.get('data')
     
 def as_open(type_name:str, file_name:str):
   if type_name == 'rocksdb':
