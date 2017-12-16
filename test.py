@@ -35,3 +35,11 @@ db.put('5', '6')
 db.put('7', '9')
 print(db.get('5'))
 print('redis get keys',list(db.keys()))
+
+'''
+gcp-datastore
+'''
+db = RARSwitch.as_open('datastore', 'test')
+db.put('5', '6')
+db.put('7', '9')
+print('datastore get test', db.get('5') )

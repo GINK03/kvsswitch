@@ -65,6 +65,23 @@ class Redis(object):
     for key in self.r.scan_iter('*'):
       yield key.decode()
 
+from google.cloud import datastore
+class Datastore(object):
+  def __init__(self, kind):
+    client = datastore.Client() 
+    self.client = client
+    self.kind = kind
+  def put(self, key:str, value:str):
+    key = self.client.key(self.kind, key)
+    task = datastore.Entity(key=key)
+    task['value'] = value
+    self.client.put(task)
+  def get(self, key:str):
+    key = self.client.key(self.kind, key)
+    task = datastore.Entity(key=key)
+    return self.client.get(key).get('value') 
+
+
 def as_open(type_name:str, file_name:str):
   if type_name == 'rocksdb':
     return RocksDB(file_name)
@@ -74,4 +91,5 @@ def as_open(type_name:str, file_name:str):
     return Aerospike(file_name)
   elif type_name == 'redis':
     return Redis(file_name)
-    
+  elif type_name == 'datastore':
+    return Datastore(kind=file_name)
