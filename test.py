@@ -8,6 +8,13 @@ db.put('1', '2')
 print(db.get('1'))
 
 '''
+leveldb-test
+'''
+db = RARSwitch.as_open('leveldb', 'test-leveldb.db')
+db.put('7', '9')
+print(db.get('7'))
+
+'''
 aerospike-test
 '''
 db = RARSwitch.as_open('aerospike', 'test.db')

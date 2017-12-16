@@ -10,6 +10,16 @@ class RocksDB(object):
   def get(self, key:str):
     return self.db.get(bytes(key,'utf8')).decode()
     
+import plyvel
+class LevelDB(object):
+  def __init__(self, name):
+    db = plyvel.DB(name, create_if_missing=True)  
+    self.db = db 
+  def put(self, key:str, value:str):
+    self.db.put(bytes(key,'utf8'), bytes(value, 'utf8')) 
+  def get(self, key:str):
+    return self.db.get(bytes(key,'utf8')).decode()
+    
 import aerospike
 class Aerospike(object):
   def __init__(self, name):
@@ -34,9 +44,13 @@ class Redis(object):
     self.r.set(key, value)
   def get(self, key:str):
     return self.r.get(key).decode()
+
+
 def as_open(type_name:str, file_name:str):
   if type_name == 'rocksdb':
     return RocksDB(file_name)
+  elif type_name == 'leveldb':
+    return LevelDB(file_name)
   elif type_name == 'aerospike':
     return Aerospike(file_name)
   elif type_name == 'redis':
