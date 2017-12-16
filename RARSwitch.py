@@ -78,9 +78,16 @@ class Datastore(object):
     self.client.put(task)
   def get(self, key:str):
     key = self.client.key(self.kind, key)
-    task = datastore.Entity(key=key)
+    #task = datastore.Entity(key=key)
     return self.client.get(key).get('value') 
-
+  def keys(self):
+    ''' kindがプライマリキーになる'''
+    query = self.client.query(kind=self.kind)  
+    for result in query.fetch():
+      #print(result.key, result.key.name)
+      if result.key.name is None:
+        continue
+      yield result.key.name
 
 def as_open(type_name:str, file_name:str):
   if type_name == 'rocksdb':
