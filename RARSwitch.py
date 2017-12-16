@@ -1,6 +1,5 @@
 
 import rocksdb
-
 class RocksDB(object):
   def __init__(self, name):
     db = rocksdb.DB(name, rocksdb.Options(create_if_missing=True))
@@ -9,6 +8,11 @@ class RocksDB(object):
     self.db.put(bytes(key,'utf8'), bytes(value, 'utf8')) 
   def get(self, key:str):
     return self.db.get(bytes(key,'utf8')).decode()
+  def keys(self):
+    it = self.db.iterkeys() 
+    it.seek_to_first()
+    for key in it:
+      yield key.decode()
     
 import plyvel
 class LevelDB(object):
@@ -19,7 +23,11 @@ class LevelDB(object):
     self.db.put(bytes(key,'utf8'), bytes(value, 'utf8')) 
   def get(self, key:str):
     return self.db.get(bytes(key,'utf8')).decode()
-    
+  def keys(self):
+    with self.db.iterator() as it:
+      for key, value in it:
+        yield key.decode()
+
 import aerospike
 class Aerospike(object):
   def __init__(self, name):
@@ -34,6 +42,15 @@ class Aerospike(object):
     key = ('hdd', self.name, key)
     (key, metadata, record) = self.client.get(key)
     return record.get('value')
+  def keys(self):
+    scan = self.client.scan('hdd', self.name)
+    records = []
+    def _result(arr):
+      key, metadata, record = arr
+      records.append(record.get('value'))
+    scan.foreach(_result)
+    for record in records:
+      yield record
 
 import redis
 class Redis(object):
@@ -44,7 +61,9 @@ class Redis(object):
     self.r.set(key, value)
   def get(self, key:str):
     return self.r.get(key).decode()
-
+  def keys(self):
+    for key in self.r.scan_iter('*'):
+      yield key.decode()
 
 def as_open(type_name:str, file_name:str):
   if type_name == 'rocksdb':
