@@ -35,15 +35,16 @@ class Aerospike(object):
     client = aerospike.client(config).connect()
     self.name = name
     self.client = client
+    self.namespace = 'hdd'
   def put(self, key:str, value:str):
-    key = ('hdd', self.name, key)
+    key = (self.namespace, self.name, key)
     self.client.put(key, {'value':value})
   def get(self, key:str):
-    key = ('hdd', self.name, key)
+    key = (self.namespace, self.name, key)
     (key, metadata, record) = self.client.get(key)
     return record.get('value')
   def keys(self):
-    scan = self.client.scan('hdd', self.name)
+    scan = self.client.scan(self.namespace, self.name)
     records = []
     def _result(arr):
       key, metadata, record = arr
@@ -51,7 +52,13 @@ class Aerospike(object):
     scan.foreach(_result)
     for record in records:
       yield record
-
+  def delete(self, key:str):
+    key = (self.namespace, self.name, key)
+    try:
+      self.client.remove(key)  
+      return True
+    except Exception:
+      return False
 import redis
 class Redis(object):
   def __init__(self, name):
@@ -64,6 +71,8 @@ class Redis(object):
   def keys(self):
     for key in self.r.scan_iter('*'):
       yield key.decode()
+  def delete(self, key:str):
+    self.r.delete(key) 
 
 from google.cloud import datastore
 class Datastore(object):
@@ -80,6 +89,10 @@ class Datastore(object):
     key = self.client.key(self.kind, key)
     #task = datastore.Entity(key=key)
     return self.client.get(key).get('value') 
+  def delete(self, key:str):
+    key = self.client.key(self.kind, key)
+    self.client.delete(key)
+    
   def keys(self):
     ''' kindがプライマリキーになる'''
     query = self.client.query(kind=self.kind)  
