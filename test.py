@@ -8,6 +8,7 @@ db.put('1', '2')
 db.put('3', '4')
 print(db.get('1'))
 print(list(db.keys()))
+[ db.delete(key) for key in db.keys() ] 
 
 '''
 leveldb-test
@@ -17,6 +18,7 @@ db.put('7', '9')
 db.put('9', '11')
 print(db.get('7'))
 print(list(db.keys()))
+[ db.delete(key) for key in db.keys() ] 
 
 '''
 aerospike-test
@@ -36,7 +38,6 @@ db.put('7', '9')
 print(db.get('5'))
 print('redis get keys',list(db.keys()))
 [ db.delete(key) for key in db.keys() ]
-
 '''
 gcp-datastore
 '''

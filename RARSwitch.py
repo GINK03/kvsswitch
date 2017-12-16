@@ -13,7 +13,9 @@ class RocksDB(object):
     it.seek_to_first()
     for key in it:
       yield key.decode()
-    
+  def delete(self, key:str):
+    self.db.delete(bytes(key, 'utf8')) 
+
 import plyvel
 class LevelDB(object):
   def __init__(self, name):
@@ -27,6 +29,8 @@ class LevelDB(object):
     with self.db.iterator() as it:
       for key, value in it:
         yield key.decode()
+  def delete(self, key:str):
+    self.db.delete(bytes(key, 'utf8')) 
 
 import aerospike
 class Aerospike(object):
