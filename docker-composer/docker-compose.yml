@@ -1,0 +1,12 @@
+version: '3'
+services:
+  redis:
+    build: ./redis
+    ports:
+     - "6379:6379"
+    image: "redis:latest"
+  aerospike:
+    build: ./aerospike
+    ports:
+     - "3000:3000"
+    image: "aerospike/aerospike-server:latest"

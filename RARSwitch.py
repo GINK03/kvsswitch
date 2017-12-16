@@ -19,11 +19,11 @@ class Aerospike(object):
     self.client = client
   def put(self, key:str, value:str):
     key = ('hdd', self.name, key)
-    self.client.put(key, { 'data': value })
+    self.client.put(key, {'value':value})
   def get(self, key:str):
     key = ('hdd', self.name, key)
     (key, metadata, record) = self.client.get(key)
-    return record.get('data')
+    return record.get('value')
 
 import redis
 class Redis(object):
